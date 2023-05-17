@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="express-eureka" />
+        <module name="express-comment" />
+        <module name="express-message" />
+        <module name="express-activity" />
+        <module name="express-trade" />
+        <module name="express-common" />
+        <module name="express-job" />
+        <module name="express-gateway" />
+        <module name="express-note" />
+        <module name="express-user" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="comment" target="11" />
+      <module name="express-friends" target="1.8" />
+      <module name="express-notice" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="comment" options="-parameters" />
+      <module name="express-activity" options="-parameters" />
+      <module name="express-comment" options="-parameters" />
+      <module name="express-common" options="-parameters" />
+      <module name="express-eureka" options="-parameters" />
+      <module name="express-friends" options="-parameters" />
+      <module name="express-gateway" options="-parameters" />
+      <module name="express-job" options="-parameters" />
+      <module name="express-message" options="-parameters" />
+      <module name="express-note" options="-parameters" />
+      <module name="express-notice" options="-parameters" />
+      <module name="express-service" options="-parameters" />
+      <module name="express-trade" options="-parameters" />
+      <module name="express-user" options="-parameters" />
+    </option>
+  </component>
+</project>

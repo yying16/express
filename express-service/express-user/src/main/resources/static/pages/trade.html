@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Trade</title>
+</head>
+<body>
+<div id="app">
+    <el-main>
+        <el-row>
+            <el-form :inline="true" :model="formInLine" class="demo-form-inline">
+                <el-form-item>
+                    <el-select placeholder="分类" v-model="formInLine.category">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="书籍材料" value="书籍材料"></el-option>
+                        <el-option label="数码产品" value="数码产品"></el-option>
+                        <el-option label="衣裤鞋帽" value="衣裤鞋帽"></el-option>
+                        <el-option label="运动器材" value="运动器材"></el-option>
+                        <el-option label="生活器具" value="生活器具"></el-option>
+                        <el-option label="虚拟物品" value="虚拟物品"></el-option>
+                        <el-option label="装饰品" value="装饰品"></el-option>
+                        <el-option label="化妆品" value="化妆品"></el-option>
+                        <el-option label="其他" value="其他"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-select placeholder="搜索类型" v-model="formInLine.type">
+                        <el-option label="标题" value="标题"></el-option>
+                        <el-option label="发布者" value="发布者"></el-option>
+                        <el-option label="内容" value="内容"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-input placeholder="关键字" v-model="formInLine.content"></el-input>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" @click="getTrades">查询</el-button>
+                </el-form-item>
+                <el-button round type="success" @click="dialogVisible4Add = true;resetForm()">发起买卖</el-button>
+                <el-button round type="info" @click="dialogVisible4Issue = true;getAllTrades4Issue()">我的发布</el-button>
+                <el-button round @click="myCollection">收藏夹</el-button>
+
+            </el-form>
+
+        </el-row>
+
+        <el-table :data="trades"
+                  style="width: 100%"
+                  stripe>
+            <el-table-column prop="tradeId" label="编号" align="center" width="200">
+            </el-table-column>
+            <el-table-column prop="title" label="标题" align="center">
+            </el-table-column>
+            <el-table-column prop="promulgator" label="发布者" align="center" width="160">
+            </el-table-column>
+            <el-table-column prop="category" label="分类" align="center" width="120">
+            </el-table-column>
+            <el-table-column prop="money" label="金额" align="center" width="120">
+            </el-table-column>
+            <el-table-column prop="contact" label="联系方式" align="center" width="180">
+            </el-table-column>
+            <el-table-column prop="createTime" label="发布时间" align="center" width="180">
+            </el-table-column>
+            <el-table-column prop="collected" label="收藏个数" align="center" width="120">
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="300">
+                <template slot-scope="scope">
+                    <el-button :type="[scope.row.enshrined ?'primary':'']" size="mini" icon="el-icon-star-off" @click="collect(scope.row)" circle></el-button>
+                    <el-button size="mini" @click="answer(scope.row)">私信</el-button>
+                    <el-button type="success" size="mini" @click="detail(scope.row)">详情</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <!--分页工具条-->
+        <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pagination.currentPage"
+                :page-sizes="[5, 10, 15]"
+                :page-size="5"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total">
+        </el-pagination>
+
+
+        <!--发起买卖对话框-->
+        <el-dialog title="发起买卖" :visible.sync="dialogVisible4Add" width="40%" center>
+
+            <!--对话框中的表单(新增帖子)-->
+            <el-form ref="formAddTrade"
+                     :model="tradeFormData"
+                     label-width="150px">
+                <el-form-item label="标题:">
+                    <el-input v-model="tradeFormData.title"></el-input>
+                </el-form-item>
+                <el-form-item label="分类:">
+                    <el-select placeholder="分类" v-model="tradeFormData.category">
+                        <el-option label="书籍材料" value="书籍材料"></el-option>
+                        <el-option label="数码产品" value="数码产品"></el-option>
+                        <el-option label="衣裤鞋帽" value="衣裤鞋帽"></el-option>
+                        <el-option label="运动器材" value="运动器材"></el-option>
+                        <el-option label="生活器具" value="生活器具"></el-option>
+                        <el-option label="虚拟物品" value="虚拟物品"></el-option>
+                        <el-option label="装饰品" value="装饰品"></el-option>
+                        <el-option label="化妆品" value="化妆品"></el-option>
+                        <el-option label="其他" value="其他"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="价格:">
+                    <el-input v-model="tradeFormData.money"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式:">
+                    <el-input v-model="tradeFormData.contact"></el-input>
+                </el-form-item>
+                <el-form-item label="内容:">
+                    <el-input v-model="tradeFormData.content" type="textarea" :autosize="{ minRows: 5, maxRows: 5 }"></el-input>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-upload
+                            class="file"
+                            action="http://127.0.0.1:7001/express-user/upload"
+                            :http-request="uploadImage"
+                            :limit="3"
+                            :file-list="files"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            list-type="picture">
+                        <el-button size="small" type="primary">上传图片</el-button>
+                        <div slot="tip" class="el-upload__tip">限上传3张图片，且不超过10MB</div>
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="addTrade()">确认</el-button>
+                    <el-button @click="dialogVisible4Add = false;resetForm()">取消</el-button>
+                </el-form-item>
+            </el-form>
+
+        </el-dialog>
+
+        <!--   详情     -->
+        <el-dialog title="详情" :visible.sync="dialogVisible4Detail" width="60%" center>
+
+            <el-form ref="formDetail"
+                     :model="tradeFormData"
+                     label-width="180px">
+                <el-form-item label="标题:">
+                    <el-input readonly v-model="tradeFormData.title"></el-input>
+                </el-form-item>
+                <el-form-item label="发布者:">
+                    <el-input readonly v-model="tradeFormData.promulgator"></el-input>
+                </el-form-item>
+                <el-form-item label="分类:">
+                    <el-input readonly v-model="tradeFormData.category"></el-input>
+                </el-form-item>
+                <el-form-item label="金额:">
+                    <el-input readonly v-model="tradeFormData.money"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式:">
+                    <el-input readonly v-model="tradeFormData.contact"></el-input>
+                </el-form-item>
+                <el-form-item label="内容:">
+                    <el-input readonly v-model="tradeFormData.content" type="textarea" :autosize="{ minRows: 5, maxRows: 5 }"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <div style="float: left" v-for="picture in tradeFormData.pictures" @click="test(picture)">
+                        <img style="height: 100px;float: left" v-bind:src="picture" alt=""/>
+                    </div>
+                </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" @click="answer(scope.row)">私信</el-button>
+                    <el-button type="primary" @click="dialogVisible4Detail = false;resetForm()">关闭</el-button>
+                </el-form-item>
+            </el-form>
+
+        </el-dialog>
+
+
+        <!--我的发布对话框-->
+        <el-dialog title="我的发布" :visible.sync="dialogVisible4Issue" width="80%" center append-to-body>
+            <el-table :data="issueTrades" style="width: 100%" stripe>
+                <el-table-column prop="tradeId" label="编号" align="center" width="200"></el-table-column>
+                <el-table-column prop="title" label="标题" align="center"></el-table-column>
+                <el-table-column prop="createTime" label="发布时间" align="center" width="200"></el-table-column>
+                <el-table-column label="操作" align="center" width="280">
+                    <template slot-scope="scope">
+                        <el-button type="success" size="mini" @click="detail(scope.row)">详情</el-button>
+                        <el-button type="danger" size="mini" @click="deleteTrade(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页工具条-->
+            <el-pagination
+                    @size-change="handleSizeChange4Issue"
+                    @current-change="handleCurrentChange4Issue"
+                    :current-page="pagination4Issue.currentPage"
+                    :page-sizes="[5, 10, 15]"
+                    :page-size="5"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="pagination4Issue.total">
+            </el-pagination>
+        </el-dialog>
+
+        <!--收藏夹对话框-->
+        <el-dialog title="收藏夹" :visible.sync="dialogVisible4Favorites" width="80%" center append-to-body>
+            <el-table :data="favoritesTrades" style="width: 100%" stripe>
+                <el-table-column prop="tradeId" label="编号" align="center" width="200"></el-table-column>
+                <el-table-column prop="title" label="标题" align="center"></el-table-column>
+                <el-table-column prop="promulgator" label="发布者" align="center" width="160"></el-table-column>
+                <el-table-column prop="category" label="分类" align="center" width="80"></el-table-column>
+                <el-table-column prop="money" label="金额" align="center" width="100"></el-table-column>
+                <el-table-column prop="contact" label="联系方式" align="center" width="200"></el-table-column>
+                <el-table-column prop="createTime" label="发布时间" align="center" width="200"></el-table-column>
+                <el-table-column label="操作" align="center" width="280">
+                    <template slot-scope="scope">
+                        <el-button type="success" size="mini" @click="detail(scope.row)">详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页工具条-->
+            <el-pagination
+                    @size-change="handleSizeChange4Issue"
+                    @current-change="handleCurrentChange4Issue"
+                    :current-page="pagination4Issue.currentPage"
+                    :page-sizes="[5, 10, 15]"
+                    :page-size="5"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="pagination4Issue.total">
+            </el-pagination>
+        </el-dialog>
+
+        <!--发送消息对话框-->
+        <el-dialog title="发送消息" :visible.sync="dialogVisible4Send" width="40%" center>
+            <!--对话框中的表单(新增帖子)-->
+            <el-form ref="formSendMessage"
+                     :model="sendMessageData"
+                     label-width="150px">
+                <el-form-item label="接收者:">
+                    <el-input readonly v-model="sendMessageData.receiver"></el-input>
+                </el-form-item>
+                <el-form-item label="内容:">
+                    <el-input v-model="sendMessageData.content" type="textarea" :autosize="{ minRows: 5, maxRows: 5 }"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-upload
+                            class="file"
+                            action="http://127.0.0.1:7001/express-user/upload"
+                            :http-request="uploadImage"
+                            :limit="3"
+                            :file-list="files"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            list-type="picture">
+                        <el-button size="small" type="primary">上传图片</el-button>
+                        <div slot="tip" class="el-upload__tip">限上传3张图片，且不超过10MB</div>
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="sendMessage()">确认</el-button>
+                    <el-button @click="dialogVisible4Add = false;resetForm()">取消</el-button>
+                </el-form-item>
+            </el-form>
+
+        </el-dialog>
+
+        <el-dialog :visible.sync="dialogVisible4Photo" width="80%" append-to-body>
+            <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+
+    </el-main>
+</div>
+<script src="../js/vue.js"></script>
+<script src="../js/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<link rel="stylesheet" href="../plugins/elementui/index.css">
+<script src="../plugins/elementui/index.js"></script>
+
+<script>
+    const vue = new Vue({
+        el: "#app",
+        data: {
+            //要展示的所有图书数据
+            trades: [],
+            issueTrades: [],
+            favoritesTrades: [],
+            onlineUser: null,
+            //存放复选框勾中的数据
+            multipleSelection: [],
+            //查询表单数据
+            formInLine: {
+                category: '', // 分类
+                type: '', // 搜索类型
+                content: '' //搜索内容
+            },
+            // 当前页码
+            pagination: {
+                currentPage: 1,
+                pageSize: 5,
+                total: 0
+            },
+            pagination4Issue: {
+                currentPage: 1,
+                pageSize: 5,
+                total: 0
+            },
+            //对话框数据
+            tradeFormData: {},
+            //图片
+            files: [],
+            photos: [],
+            sendMessageData: {},
+            //新增帖子对话框
+            dialogVisible4Add: false,
+            dialogVisible4Detail: false,
+            dialogVisible4Photo: false,
+            dialogVisible4Issue: false,
+            dialogVisible4Send: false,
+            dialogVisible4Favorites: false,
+            dialogImageUrl: ""
+        },
+
+        //钩子函数，VUE对象初始化完成后自动执行 /*OK*/
+        created() {
+            // //调用查询全部
+            this.onlineUser = window.parent.getOnlineUser()
+            this.getAllTrades()
+            this.getAllTrades4Issue();
+        },
+
+        methods: {
+            //重置表单
+            resetForm() {
+                this.tradeFormData = {}
+            },
+            test(url) {
+                console.log(url)
+                this.dialogVisible4Photo = true
+                this.dialogImageUrl = url
+            },
+            /**提交图片*/
+            uploadImage(res) {
+                const fd = new FormData();
+                fd.append("file", res.file);
+                axios.post(res.action + "/" + res.file.uid, fd, {'Content-Type': 'multipart/form-data'}).then(r => {
+                    this.photos.push(r.data)
+                })
+            },
+            /**预览*/
+            handlePreview(file) {
+                console.log(file);
+                this.dialogVisible4Photo = true
+                this.dialogImageUrl = file.url
+            },
+            /**删除图片*/
+            handleRemove(file) {
+                this.photos = this.photos.filter(function (item) {
+                    return item !== file.uid;
+                })
+            },
+            //查询所有错题
+            getAllTrades() {
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-trade:7004/express-trade/getTrades/' + this.pagination.currentPage + '/' + this.pagination.pageSize + "/" + this.onlineUser.account, {}, {
+                    headers: {
+                        'token': '123',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(r => {
+                    this.pagination.currentPage = r.data.data.current;
+                    this.pagination.pageSize = r.data.data.size;
+                    this.pagination.total = r.data.data.total;
+                    this.trades = r.data.data.records;
+                })
+            },
+            getTrades() {
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-trade:7004/express-trade/getTrades/' + this.pagination.currentPage + '/' + this.pagination.pageSize + "/" + this.onlineUser.account, this.formInLine, {
+                    headers: {
+                        'token': '123',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(r => {
+                    this.pagination.currentPage = r.data.data.current;
+                    this.pagination.pageSize = r.data.data.size;
+                    this.pagination.total = r.data.data.total;
+                    this.trades = r.data.data.records;
+                })
+            },
+
+            // 发起买卖
+            addTrade() {
+                /**拼接photo*/
+                let photo = "";
+                for (let i = 0; i < this.photos.length - 1; i++) {
+                    photo = photo + this.photos[i] + "#";
+                }
+                photo = photo + this.photos[this.photos.length - 1];
+                this.tradeFormData.photo = photo;
+                this.tradeFormData.promulgator = this.onlineUser.account;
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-trade:7004/express-trade/addTrade', this.tradeFormData, {
+                    headers: {
+                        'token': '123',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(r => {
+                    if (r.data.code === 0) {//添加成功
+                        this.$message.success("发起买卖成功");
+                        this.tradeFormData = {}
+                    } else {
+                        this.$message.error("发起买卖失败");
+                    }
+                }).finally(() => {
+                    this.dialogVisible4Add = false;
+                    this.files = []
+                    this.photos = []
+                    this.getAllTrades();//刷新
+                })
+            },
+            /**详情*/
+            detail(row) {
+                console.log(row)
+                axios.get('/express-user/cross/get?url=http://eureka-client-express-trade:7004/express-trade/getDetail/' + row.tradeId).then(r => {
+                    this.tradeFormData = r.data.data;
+                    console.log(this.tradeFormData);
+                    this.dialogVisible4Detail = true;
+                })
+            },
+
+
+            <!--分页-->
+            handleSizeChange(val) { //切换当前页显示条数
+                this.pagination.pageSize = val;
+                this.getTrades();
+            },
+            handleCurrentChange(val) { //切换页码值
+                this.pagination.currentPage = val;
+                this.getTrades();
+            },
+
+            //复选框选中后执行的方法 /*OK*/
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+
+            /**我的发布*/
+            //查询所有错题
+            getAllTrades4Issue() {
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-trade:7004/express-trade/getTrades/' + this.pagination.currentPage + '/' + this.pagination.pageSize + "/" + this.onlineUser.account, {
+                    'type': '发布者',
+                    'content': this.onlineUser.account
+                }, {
+                    headers: {
+                        'token': '123',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(r => {
+                    this.pagination4Issue.currentPage = r.data.data.current;
+                    this.pagination4Issue.pageSize = r.data.data.size;
+                    this.pagination4Issue.total = r.data.data.total;
+                    this.issueTrades = r.data.data.records;
+                })
+            },
+            handleCurrentChange4Issue(val) { //切换页码值
+                this.pagination.currentPage = val;
+                this.getAllTrades4Issue();
+            },
+            handleSizeChange4Issue(val) { //切换当前页显示条数
+                this.pagination.pageSize = val;
+                this.getAllTrades4Issue();
+            },
+            deleteTrade(row) {
+                this.$confirm('确认删除?', 'Tips', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.get('/express-user/cross/get?url=http://eureka-client-express-trade:7004/express-trade/delete/' + row.tradeId).then(r => {
+                        this.$message.success("删除成功");
+                        this.getAllTrades4Issue();
+                        this.getTrades();
+                    })
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                })
+            },
+            /**收藏功能*/
+            collect(row) {
+                console.log(row)
+                if (!row.enshrined) { // 未点赞
+                    axios.get('/express-user/cross/get?url=http://eureka-client-express-message:7006/express-message/addEnshrine/trade/' + row.tradeId + "/" + this.onlineUser.account).then(r => {
+                        if (r.data.code === 0) {
+                            this.getAllTrades();//刷新
+                        }
+                    })
+                } else { //已点赞
+                    axios.get('/express-user/cross/get?url=http://eureka-client-express-message:7006/express-message/deleteEnshrine/trade/' + row.tradeId + "/" + this.onlineUser.account).then(r => {
+                        if (r.data.code === 0) {
+                            this.getAllTrades();//刷新
+                        }
+                    })
+                }
+            },
+            /**-------------------消息回复模块--------------------------*/
+            answer(row) {//私信
+                if (row.promulgator !== this.onlineUser.account) {
+                    this.sendMessageData = {
+                        receiver: row.promulgator
+                    }
+                    this.dialogVisible4Send = true;
+                }
+            },
+            sendMessage() {
+                if (this.sendMessageData.receiver === "" || this.sendMessageData.receiver === undefined) {
+                    this.$notify.error({
+                        title: '错误',
+                        message: '接收者不能为空!'
+                    });
+                } else {
+                    //检测接收方是否已正常
+                    axios.get("/express-user/checkUserHasRegister/" + this.sendMessageData.receiver).then(r => {
+                        if (r.data) {//用户已注册
+                            /**拼接photo*/
+                            let photo = "";
+                            for (let i = 0; i < this.photos.length - 1; i++) {
+                                photo = photo + this.photos[i] + "#";
+                            }
+                            photo = photo + this.photos[this.photos.length - 1];
+                            this.sendMessageData.photo = photo;
+                            if (photo === "undefined")
+                                this.sendMessageData.photo = "";
+                            this.sendMessageData.sender = this.onlineUser.account;
+                            axios.post('/express-user/cross/post?url=http://eureka-client-express-message:7006/express-message/addMessage', this.sendMessageData, {
+                                headers: {
+                                    'token': '123',
+                                    'Content-Type': 'application/json'
+                                }
+                            }).then(r => {
+                                if (r.data.code === 0) {//添加成功
+                                    window.parent.sendMessage(this.sendMessageData); // 发送消息
+                                    this.$notify({
+                                        title: '成功',
+                                        message: '发送消息成功',
+                                        type: 'success'
+                                    });
+                                    this.sendMessageData = {}
+                                    this.dialogVisible4Send = false;
+                                } else {
+                                    this.$notify.error({
+                                        title: '错误',
+                                        message: '发送消息失败'
+                                    });
+                                }
+                            }).finally(() => {
+                                this.dialogVisible4Add = false;
+                                this.files = []
+                                this.photos = []
+                                this.getAllMessage();//刷新
+                            })
+                        } else {
+                            this.$notify.error({
+                                title: '错误',
+                                message: '接收者尚未注册或有违规记录!'
+                            });
+                        }
+                    })
+                }
+            },
+            /**------------------收藏夹---------------*/
+            myCollection() {
+                axios.get('/express-user/cross/get?url=http://eureka-client-express-trade:7004/express-trade/getMyCollection/' + this.onlineUser.account).then(r => {
+                    console.log(r.data.data);
+                    this.favoritesTrades = r.data.data;
+                })
+                this.dialogVisible4Favorites = true;
+            }
+        }
+    });
+</script>
+</body>
+</html>

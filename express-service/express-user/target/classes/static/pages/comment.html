@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Job</title>
+</head>
+<body>
+<div id="app">
+    <el-main>
+
+        <el-row>
+            <el-input type="textarea" :rows="3" v-model="comment" style="width: 80%"
+                      maxlength="100" placeholder="请文明交流"></el-input>
+            <el-button type="success" icon="el-icon-check" circle @click="addComment" style="width: 60px;height: 60px"></el-button>
+        </el-row>
+
+        <!--    树形结构    -->
+        <div class="custom-tree-container">
+            <div class="block">
+                <el-tree
+                        :data="comments"
+                        node-key="_id"
+                        highlight-current="true"
+                        icon-class="el-icon-d-arrow-right"
+                        :expand-on-click-node="false">
+                      <span class="custom-tree-node" slot-scope="{ node, data }">
+                        <span>{{ node.label }}</span>
+                        <span>
+                          <el-button type="text" circle size="mini" @click="toReply(data)">回复</el-button>
+                        </span>
+                      </span>
+                </el-tree>
+            </div>
+        </div>
+
+    </el-main>
+
+    <el-dialog title="回复消息"  :visible.sync="dialogVisible4Send" width="40%" append-to-body>
+        <el-input v-model="replyComment" style="width: 82%" maxlength="100" placeholder="请文明交流"></el-input>
+        <el-button type="primary" plain @click="reply">回复</el-button>
+    </el-dialog>
+
+</div>
+<script src="../js/vue.js"></script>
+<script src="../js/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<link rel="stylesheet" href="../plugins/elementui/index.css">
+<script src="../plugins/elementui/index.js"></script>
+
+<script>
+    const vue = new Vue({
+        el: "#app",
+        data: {
+            onlineUser: null,
+            comment: "",
+            comments: [],
+            defaultProps: {
+                children: 'children',
+                label: 'label'
+            },
+            dialogVisible4Send:false,
+            replyComment:"",
+            replyId:"",
+        },
+        created() {
+            this.onlineUser = window.parent.getOnlineUser()
+            this.getAllComment();
+        },
+        methods: {
+            addComment(){
+                this.comment = this.onlineUser.username + " : "+this.comment;
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-comment:7007/express-comment/addComment/',{
+                    'comment':this.comment
+                }).then(r =>{
+                    console.log(r)
+                    this.comments = r.data.data;
+                    this.comment = "";
+                    this.$message.success("已发送");
+                })
+            },
+            getAllComment(){
+                axios.get('/express-user/cross/get?url=http://eureka-client-express-comment:7007/express-comment/getAllComment/').then(r =>{
+                    console.log(r)
+                    this.comments = r.data.data;
+                })
+            },
+            toReply(row){
+                this.replyId = row.id;
+                this.dialogVisible4Send = true;
+            },
+            reply() {
+                this.replyComment = this.onlineUser.username + " : "+this.replyComment;
+                axios.post('/express-user/cross/post?url=http://eureka-client-express-comment:7007/express-comment/replayComment?superId='+this.replyId,{
+                    'comment':this.replyComment
+                }).then(r =>{
+                    console.log(r)
+                    this.comments = r.data.data;
+                    this.dialogVisible4Send = false;
+                    this.replyComment = "";
+                    this.replyId = "";
+                    this.$message.success("已发送");
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

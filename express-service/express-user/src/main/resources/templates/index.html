@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>校园表白墙</title>
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <link rel="stylesheet" th:href="@{~/express-user/plugins/elementui/index.css}">
+    <link rel="stylesheet" th:href="@{~/express-user/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{~/express-user/css/style.css}">
+</head>
+<body class="hold-transition" onload="init()">
+<div id="app">
+    <input type="checkbox" id="check">
+    <label for="check">
+        <i class="fa fa-twitter" id="btn" style="font-size: 42px"><span style="font-size: 48px;font-family: '楷体',serif">校园表白墙</span></i>
+        <i class="fa fa-times" id="cancel"></i>
+    </label>
+    <div id="header">
+        <div id="logout"><a href="javascript:app.logout()">退出登录</a></div>
+    </div>
+    <!--侧边栏-->
+    <div id="side" class="sidebar">
+        <div class="top">
+            <div id="topBox">
+                <h2 id="userName">[[${username}]]</h2>
+                <span style="display: none" id="password">[[${password}]]</span>
+            </div>
+
+        </div>
+        <ul id="introduce">
+            <li><i class="fa fa-user-circle-o"></i><span id="account">[[${account}]]</span></li>
+            <li><i class="fa fa fa-phone"></i><span id="telephone">[[${telephone}]]</span></li>
+            <li><i class="fa fa-envelope"></i><span id="email">[[${email}]]</span></li>
+        </ul>
+        <ul id="center">
+            <li><a href="javascript:app.changeFrame('announcement')"><i class="fa fa-server"></i>公告栏</a></li>
+            <li><a href="javascript:app.changeFrame('note')"><i class="fa fa-server"></i>墙墙投稿</a></li>
+            <li><a href="javascript:app.changeFrame('activity')"><i class="fa fa-server"></i>竞赛招募</a></li>
+            <li><a href="javascript:app.changeFrame('trade')"><i class="fa fa-server"></i>二手交易</a></li>
+            <li><a href="javascript:app.changeFrame('job')"><i class="fa fa-server"></i>校园兼职</a></li>
+            <li><a href="javascript:app.changeFrame('comment')"><i class="fa fa-server"></i>树洞倾述</a></li>
+            <li><a href="javascript:app.changeFrame('sender')"><i class="fa fa-server"></i>&nbsp;发件箱&nbsp;</a></li>
+            <li><a href="javascript:app.changeFrame('receiver')"><i class="fa fa-server"></i>&nbsp;收件箱&nbsp;</a></li>
+        </ul>
+        <ul id="bottom">
+            <li><a href="javascript:app.openChangePasswordDialog()"><i class="fa fa fa-sun-o"></i>修改密码</a></li>
+            <li><a href="javascript:app.logout()"><i class="fa fa fa-power-off"></i>退出登录</a></li>
+        </ul>
+    </div>
+    <br><br>
+    <!--主界面-->
+    <div class="content">
+        <iframe id="index" :src="frame"></iframe>
+    </div>
+    <!--修改密码对话框-->
+    <el-dialog
+            title="修改密码"
+            :visible.sync="changePasswordDialog"
+            width="30%">
+        <el-form ref="FormEditPsw" :model="PswDataForm" label-width="150px">
+            <el-form-item label="请输入原密码:">
+                <el-input id="oldPsw" type="password" placeholder="请输入原密码" v-model="PswDataForm.oldPsw" show-password></el-input>
+                <br>
+                <span id="password_err" class="err_msg" style="display: none">原密码错误，请再次输入</span>
+            </el-form-item>
+            <el-form-item label="请输入新密码:">
+                <el-input id="newPsw" type="password" placeholder="请输入新密码" v-model="PswDataForm.newPsw" show-password></el-input>
+                <br>
+                <span id="password_err1" class="err_msg" style="display: none">新密码格式错误(至少六位)</span>
+            </el-form-item>
+            <el-form-item label="重新输入新密码:">
+                <el-input id="newPsw1" type="password" placeholder="再次输入新密码" v-model="PswDataForm.newPsw1" show-password></el-input>
+                <br>
+                <span id="password_err3" class="err_msg" style="display: none">密码不一样，请再次输入</span>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="changePassword" changePasswordDialog=false>确认</el-button>
+                <el-button @click="changePasswordDialog = false">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+</div>
+</body>
+<script th:src="@{~/express-user/js/vue.js}"></script>
+<script th:src="@{~/express-user/plugins/elementui/index.js}"></script>
+<script type="text/javascript" th:src="@{~/express-user/js/jquery.min.js}"></script>
+<script th:src="@{~/express-user/js/axios-0.18.0.js}"></script>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            onlineUser: { //当前在线用户信息
+                account: "",
+                password: "",
+                username: "",
+                telephone: "",
+                email: ""
+            },
+            frame: "",    //主界面
+            PswDataForm: {//修改密码数据
+                oldPsw: '',
+                newPsw: '',
+                newPsw1: ''
+            },
+            //修改密码对话卡是否显示
+            changePasswordDialog: false,
+            temp:null
+        },
+        methods: {
+            //初始化未读消息
+            initUnReadMessage() {
+                axios.get('/express-user/cross/get?url=http://eureka-client-express-message:7006/express-message/getMessageUnRead/' + this.onlineUser.account).then(r => {
+                    console.log(r)
+                })
+            },
+            initUser() {
+                this.onlineUser.account = document.getElementById("account").innerText;
+                this.onlineUser.password = document.getElementById("password").innerText;
+                this.onlineUser.username = document.getElementById("userName").innerText;
+                this.onlineUser.telephone = document.getElementById("telephone").innerText;
+                this.onlineUser.email = document.getElementById("email").innerText;
+                this.changeFrame('announcement')
+            },
+            //更改主界面（图书信息，归还图书，借阅记录……）
+            changeFrame(frame) {
+                this.frame = "/express-user/pages/" + frame + ".html";
+                document.getElementById('cancel').click();   //关闭侧边栏
+            },
+            //打开修改密码对话框
+            openChangePasswordDialog() {
+                this.changePasswordDialog = true;
+            },
+            //修改密码操作
+            changePassword() {
+                var oldPsw = this.PswDataForm.oldPsw; //旧密码
+                var newPsw = this.PswDataForm.newPsw; //新密码
+                var newPsw1 = this.PswDataForm.newPsw1; //确认新密码
+
+                if (this.onlineUser.password !== oldPsw) {
+                    this.$message.error("您输入的原密码不正确,请重新输入! (-_-||)");
+                } else if (newPsw !== newPsw1) {
+                    this.$message.error("两次新密码输入内容不一致,请重新输入! (-_-||)");
+                } else {
+                    //弹出警告框,让普通用户进行二次确认
+                    this.$confirm('确认更改您的密码?', 'Tips', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.get("/express-user/changePassword/" + this.onlineUser.account + "/" + oldPsw + "/" + newPsw).then((res) => {
+                            this.changePasswordDialog = false;
+                        }).finally(() => {
+                            //弹出确认框
+                            this.$confirm("更改密码成功,请重新登录~ (^_^)", "Tips", {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'success'
+                                /*无论是取消还是确定,点击后都是退出*/
+                            }).then(() => {
+                                this.logout();
+                            }).catch(() => {
+                                this.logout();
+                            });
+                        });
+                    }).catch(() => {
+                        this.$message.info("已取消操作");
+                        this.changePasswordDialog = false;
+                    })
+                }
+            },
+            logout() {
+                window.location.href = "logout";
+            },
+            prompt(data) { // 收到消息提示
+                console.log(data)
+                this.$notify({
+                    title: data.sender + '发来一条消息',
+                    message: data.content,
+                    type: 'info'
+                });
+            },
+            getUnReadMessage() {
+                axios.get("/express-user/cross/get?url=http://eureka-client-express-message:7006/express-message/getMessageUnRead/"+this.onlineUser.account).then(r =>{
+                    console.log(r.data.data);
+                    let list = r.data.data;
+                    this.temp = list;
+                    for (let i = 0; i < list.length; i++) {
+                        this.prompt(list[i]);
+                    }
+                })
+            },
+        },
+        //钩子函数
+        created() {
+            this.initUser();
+            this.initUnReadMessage();
+            this.getUnReadMessage();
+        }
+    });
+
+    function getOnlineUser() {
+        return app.onlineUser;
+    }
+
+    function sendMessage(msg) { // 发送信息
+        websocket.send(JSON.stringify(msg));
+    }
+
+    /**---------websocket------------*/
+    const wsUri = "ws://127.0.0.1:7001/express-user/websocket/" + getOnlineUser().account;
+    let websocket = new WebSocket(wsUri);
+
+    function init() {
+        testWebSocket();
+    }
+
+    function testWebSocket() {
+        websocket.onopen = function (evt) {
+            onOpen(evt)
+        };
+        websocket.onclose = function (evt) {
+            onClose(evt)
+        };
+        websocket.onmessage = function (evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function (evt) {
+            onError(evt)
+        };
+    }
+
+    function onOpen(evt) {
+        console.log("onOpen :" + evt.data);
+    }
+
+    function onClose(evt) {
+        console.log("onClose :" + evt.data);
+    }
+
+    function onMessage(evt) {
+        console.log("onMessage :" + evt.data);
+        app.prompt(JSON.parse(evt.data));
+    }
+
+    function onError(evt) {
+        console.log("error:" + evt.data);
+    }
+
+</script>
+</html>

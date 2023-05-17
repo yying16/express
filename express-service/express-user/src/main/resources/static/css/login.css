@@ -1,0 +1,231 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400|Lora");
+
+body {
+  background-image: url("../image/background.jpg");
+  background-size: 100%;
+}
+
+/* 容器的样式 */
+.container {
+  margin: auto;
+  width: 650px;
+  height: 550px;
+  position: relative;
+}
+
+.welcome {
+  background: #f6f6f6;
+  width: 650px;
+  height: 415px;
+  position: absolute;
+  top: 25%;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bigBox {
+  position: absolute;
+  top: -10%;
+  left: 5%;
+  background: #8D96AD;
+  width: 320px;
+  height: 500px;
+  border-radius: 5px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease-in-out;
+  z-index: 2;
+}
+
+.noDisplay {
+  display: none;
+  transition: all 0.5s ease;
+}
+
+.leftBox, .rightBox {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  transition: 1s all ease;
+}
+
+.leftBox {
+  left: -2%;
+}
+
+.rightBox {
+  right: -2%;
+}
+
+/* 字体和按钮的样式 */
+h1 {
+  font-family: 楷体, serif;
+  text-align: center;
+  margin-top: 95px;
+  text-transform: uppercase;
+  color: #f6f6f6;
+  font-size: 2.5em;
+  letter-spacing: 8px;
+}
+
+.title {
+  font-family: 楷体, serif;
+  color: #8e9aaf;
+  font-size: 1.8em;
+  line-height: 1.1em;
+  letter-spacing: 3px;
+  text-align: center;
+  font-weight: 300;
+  margin-top: 20%;
+}
+
+.desc {
+  margin-top: -8px;
+  margin-right: 54px;
+  text-align: right;
+}
+
+.account {
+  margin-top: 45%;
+  font-size: 10px;
+}
+
+p {
+  font-family: 楷体, serif;
+  font-size: 0.7em;
+  letter-spacing: 2px;
+  color: #8e9aaf;
+  text-align: center;
+}
+
+span {
+  color: #eac7cc;
+}
+
+.book {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  top: 40%;
+  left: 27%;
+  opacity: 0.8;
+}
+
+.smaller {
+  width: 130px;
+  height: 130px;
+  top: 40%;
+  left: 30%;
+  opacity: 0.9;
+}
+
+button {
+  padding: 8px;
+  font-family: 楷体, serif;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 16px;
+  border-radius: 10px;
+  margin: auto;
+  outline: none;
+  display: block;
+}
+
+button:hover {
+  background: #8e9aaf;
+  color: #f6f6f6;
+  transition: background-color 1s ease-out;
+}
+
+.button {
+  padding: 8px;
+  margin-top: 3%;
+  background: #f6f6f6;
+  color: #7d81ce;
+  border: solid 1px #eac7cc;
+}
+
+/* 表单样式 */
+form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 7px;
+}
+
+.more-padding {
+  padding-top: 35px;
+}
+
+.more-padding input {
+  padding: 12px;
+}
+
+.more-padding .submit {
+  margin-top: 45px;
+}
+
+.submit {
+  margin-top: 25px;
+  padding: 12px;
+  border-color: #7d81ce;
+}
+
+.submit:hover {
+  background: #cbc0d3;
+  border-color: #bfb1c9;
+}
+
+input {
+  font-size: 1.2em;
+  background: rgb(232,240,254);
+  width: 65%;
+  color: #516a73;
+  border: none;
+  border-bottom: 1px solid rgba(246, 246, 246, 0.5);
+  padding: 9px;
+  font-weight: 100;
+}
+
+input::placeholder {
+  color: rgba(76, 152, 164, 0.38);
+  letter-spacing: 2px;
+  font-size: 1.2em;
+  font-family: 楷体, serif;
+  font-weight: 100;
+}
+
+input:focus {
+  color: #66bba7;
+  outline: none;
+  border-bottom: 1px solid rgba(94, 38, 203, 0.7);
+  font-size: 1.22em;
+  transition: 0.8s all ease;
+}
+
+input:focus::placeholder {
+  opacity: 0;
+}
+
+.checkbox {
+  display: inline;
+  white-space: nowrap;
+  position: relative;
+  left: -52px;
+  top: 25px;
+}
+
+.warn{
+  font-size: 10px;
+  color: red;
+}
+#signUp{
+  margin-top: 50%;
+}
+#signIn{
+  margin-top: 55%;
+}
+.internationalize{
+  position: absolute;
+  bottom: 1%;
+  left: 36%;
+}

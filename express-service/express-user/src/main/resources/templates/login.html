@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册登录</title>
+    <link th:href="@{~/express-user/css/login.css}" rel="stylesheet">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <script type="text/javascript">
+        function toSignUp() {
+            $('.bigBox').css('transform', 'translateX(80%)');
+            $('.signIn').addClass('noDisplay');
+            $('.signUp').removeClass('noDisplay');
+        }
+
+        function toSignIn() {
+            $('.bigBox').css('transform', 'translateX(0%)');
+            $('.signUp').addClass('noDisplay');
+            $('.signIn').removeClass('noDisplay');
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="welcome">
+        <div class="bigBox">
+            <div class="signUp noDisplay">
+                <h1 th:text="注册">注册</h1>
+                <form th:action="@{/checkUser}" th:object="${user}" method="post">
+                    <input type="text" name="account" th:placeholder="#{login.account}">
+                    <span class="warn" th:if="${#fields.hasErrors('account')}" th:errors="*{account}">账号格式有误</span>
+                    <input type="password" name="password" th:placeholder="#{login.password}">
+                    <span class="warn" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">密码格式有误</span>
+                    <input type="text" name="username" th:placeholder="#{login.username}">
+                    <span class="warn" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">用户名格式有误</span>
+                    <input type="text" name="telephone" th:placeholder="#{login.telephone}">
+                    <span class="warn" th:if="${#fields.hasErrors('telephone')}"
+                          th:errors="*{telephone}">手机号码格式有误</span>
+                    <input type="text" name="email" th:placeholder="#{login.email}">
+                    <span class="warn" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">邮箱格式有误</span>
+                    <button type="submit" class="button submit" th:text="#{login.registerAccount}">注册账号</button>
+                </form>
+            </div>
+
+            <!-- 登录 -->
+            <div class="signIn">
+                <h1 th:text="#{login.signIn}">登录</h1>
+                <form class="more-padding" th:action="@{/toLogin}" method="post">
+                    <input type="text" name="account" th:placeholder="#{login.account}">
+                    <input type="password" name="password" th:placeholder="#{login.password}">
+                    <div class="warn">[[${wrong}]]</div>
+                    <button type="submit" class="button submit" th:text="#{login.signIn}">&nbsp;登录&nbsp;</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="leftBox">
+            <h2 class="title">
+                聪明在于勤奋<br>
+                天才在于积累<br>
+            </h2>
+            <p class="desc">——华罗庚</p>
+            <img class="book smaller" th:src="@{~/express-user/image/book2.png}"/>
+            <button class="button" id="signIn" onclick="toSignIn()" th:text="#{login.signIn}">&nbsp;登录&nbsp;</button>
+            <div class="internationalize" >
+                <a class="btn mt-5 btn-sm" th:href="@{login(loc='zh_CN')}">中文</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="btn mt-5 btn-sm" th:href="@{login(loc='en_US')}">English</a>
+            </div>
+        </div>
+
+        <div class="rightBox">
+            <h2 class="title">
+                饭可以一日不吃<br>
+                觉可以一日不睡<br>
+                书不可以一日不读<br>
+            </h2>
+            <p class="desc" >——毛泽东</p>
+            <img class="book" th:src="@{~/express-user/image/book1.png}"/>
+            <button class="button" id="signUp" onclick="toSignUp()" th:text="#{login.register}">&nbsp;注册&nbsp;</button>
+            <div class="internationalize" >
+                <a class="btn mt-5 btn-sm ia" th:href="@{login(loc='zh_CN')}">中文</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="btn mt-5 btn-sm ia" th:href="@{login(loc='en_US')}">English</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

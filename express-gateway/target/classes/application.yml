@@ -1,0 +1,47 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: express-gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://server1:8000/eureka/
+
+zuul:
+  prefix: /express
+  routes:
+    # 用户信息模板
+    user:
+      path: /express-user/**
+      serviceId: eureka-client-express-user
+      strip-prefix: false
+    # 活动竞赛模板
+    activity:
+      path: /express-activity/**
+      serviceId: eureka-client-express-activity
+      strip-prefix: false
+    # 表白墙模板
+    note:
+      path: /express-note/**
+      serviceId: eureka-client-express-note
+      strip-prefix: false
+    # 消息模板
+    message:
+      path: /express-message/**
+      serviceId: eureka-client-express-message
+      strip-prefix: false
+    # 兼职模板
+    job:
+      path: /express-job/**
+      serviceId: eureka-client-express-job
+      strip-prefix: false
+  host:
+    connect-timeout-millis: 15000
+    socket-timeout-millis: 60000
+
+ribbon:
+  ConnectTimeout: 15000
+  ReadTimeout: 15000

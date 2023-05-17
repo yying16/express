@@ -1,0 +1,30 @@
+server:
+  port: 7007
+  servlet:
+    context-path: /express-comment
+
+spring:
+  application:
+    name: eureka-client-express-comment
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/express?serverTimezone=UTC
+      driverClassName: com.mysql.cj.jdbc.Driver
+      max-active: 20
+      min-idle: 8
+      initial-size: 10
+    username: root
+    password: 123456
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: express
+      authentication-database: admin
+      username: admin
+      password: '123456'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://server1:8000/eureka/

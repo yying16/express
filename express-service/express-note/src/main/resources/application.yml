@@ -1,0 +1,54 @@
+server:
+  port: 7002
+  servlet:
+    context-path: /express-note
+
+spring:
+  application:
+    name: eureka-client-express-note
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/express?serverTimezone=UTC
+      driverClassName: com.mysql.cj.jdbc.Driver
+      max-active: 20
+      min-idle: 8
+      initial-size: 10
+    username: root
+    password: 123456
+  redis:
+    database: 3
+    host: 127.0.0.1
+    port: 6379
+    timeout: 10000
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      retries: 3 # 重新发送次数
+      batch-size: 16384
+      buffer-memory: 33554432
+      acks: 1
+      # 指定消息key和消息体的编解码方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: default-group
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: manual_immediate
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix: t_
+      id-type: auto
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.express.note.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://server1:8000/eureka/

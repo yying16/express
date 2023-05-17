@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/express-eureka/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-job/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/comment/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-activity/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-comment/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-job/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-message/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-note/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-notice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-notice/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-trade/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-user/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/express-user/src/main/resources/static/sql/init.sql" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/express-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/express-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>
